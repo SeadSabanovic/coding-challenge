@@ -2,6 +2,17 @@
 
 Welcome to the Evermore coding challenge. This repository is a **Monorepo** managed via NPM Workspaces, containing a frontend application, a backend API, and a dockerized database.
 
+This template provides a minimal setup and all the tools you will need for this challenge. Complete as much as you can or have the knowledge for! On the coding interview, we will ask for a quick demo of the challenge, walkthrough of the code and after which we will discuss and challenge your decisions. We might also ask you to extend the solution with some additional features on the call itself! Good luck!
+
+## Instructions
+
+Checkout the repository, install dependencies and run the project.
+Design is entirely up to you, so be as creative as you want; we have prepared MaterialUI, but feel free to pick any framework that you are comfortable with.
+Typescript, TanStack, ReactQuery, and Zustand are included in the project and are encouraged to be used.
+Structure files and components according to the best coding practices that you are familiar with
+
+Once you are done, submit a Pull Request for a review and discussion
+
 ## 🏗 Project Architecture
 
 | Service      | Technology Stack                                                   | Location             |
