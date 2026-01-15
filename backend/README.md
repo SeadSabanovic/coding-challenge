@@ -4,13 +4,13 @@ This is a RESTful API built with **NestJS** and **Prisma ORM**.
 
 ## ⚙️ Configuration
 
-The application expects a database connection string. A default configuration is provided in the `.env` file (created automatically during setup) which connects to the local Docker container.
+Copy the example environment file to create your local config:
 
-**Default `.env`**:
-
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/challenge_db?schema=public"
+```bash
+cp .env.example .env
 ```
+
+The default values work with the local Docker container, so no changes are needed.
 
 ## 🗄 Database & Prisma Workflow
 
