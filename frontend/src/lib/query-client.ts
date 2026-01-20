@@ -1,4 +1,4 @@
-import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -11,13 +11,13 @@ export const queryClient = new QueryClient({
 
   queryCache: new QueryCache({
     onError: (error) => {
-      console.error(error.message ? error.message : "An error occurred");
+      console.error(error.message ? error.message : 'An error occurred');
     },
   }),
 
   mutationCache: new MutationCache({
     onError: (error) => {
-      console.error(error.message ? error.message : "An error occurred");
+      console.error(error.message ? error.message : 'An error occurred');
     },
   }),
 });
