@@ -1,45 +1,20 @@
-import { Link, Outlet } from '@tanstack/react-router';
+import { Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
+import Nav from '@/components/layout/nav';
 
 export function RootLayout() {
   return (
-    <>
+    <div className="min-h-screen bg-background flex flex-col">
       {/* GLOBAL NAVIGATION */}
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ mr: 4 }}>
-            Challenge App
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
-            <Button
-              color="inherit"
-              component={Link}
-              to="/"
-              activeProps={{ style: { fontWeight: 'bold', textDecoration: 'underline' } }}
-            >
-              Home
-            </Button>
-            <Button
-              color="inherit"
-              component={Link}
-              to="/users"
-              activeProps={{ style: { fontWeight: 'bold', textDecoration: 'underline' } }}
-            >
-              Users
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <Nav />
 
       {/* PAGE CONTENT */}
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <main className="py-8 flex-1">
         <Outlet />
-      </Container>
+      </main>
 
       {/* DEVTOOLS (Only shows in dev mode) */}
       <TanStackRouterDevtools />
-    </>
+    </div>
   );
 }
