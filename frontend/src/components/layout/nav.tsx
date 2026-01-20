@@ -7,7 +7,7 @@ export default function Nav() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <Container className="container flex h-14 items-center">
         <Link to="/">
-          <h1 className="mr-8 font-semibold text-lg">Calendar Scheduling</h1>
+          <h1 className="mr-8 text-lg font-semibold">Calendar Scheduling</h1>
         </Link>
 
         <nav className="flex items-center gap-2">

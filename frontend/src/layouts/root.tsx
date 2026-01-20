@@ -4,12 +4,12 @@ import Nav from '@/components/layout/nav';
 
 export function RootLayout() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* GLOBAL NAVIGATION */}
       <Nav />
 
       {/* PAGE CONTENT */}
-      <main className="py-8 flex-1">
+      <main className="flex-1 py-8">
         <Outlet />
       </main>
 

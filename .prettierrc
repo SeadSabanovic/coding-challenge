@@ -4,6 +4,8 @@
   "printWidth": 100,
   "tabWidth": 2,
   "endOfLine": "auto",
+  "tailwindStylesheet": "./frontend/src/index.css",
+  "tailwindFunctions": ["cn", "clsx"],
   "overrides": [
     {
       "files": "**/*.html",
@@ -11,5 +13,6 @@
         "printWidth": 140
       }
     }
-  ]
+  ],
+  "plugins": ["prettier-plugin-tailwindcss"]
 }
