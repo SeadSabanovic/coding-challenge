@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
+import { HOUR_HEIGHT } from '../../../constants';
+
 export function CurrentTimeLine() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -9,16 +11,17 @@ export function CurrentTimeLine() {
     return () => clearInterval(timer);
   }, []);
 
-  const getCurrentTimePosition = () => {
-    const minutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-    const totalMinutes = 24 * 60;
-    return (minutes / totalMinutes) * 100;
+  const getCurrentTimePositionPx = () => {
+    const hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+    // Each hour = HOUR_HEIGHT pixels, each minute = HOUR_HEIGHT/60 pixels
+    return hours * HOUR_HEIGHT + minutes * (HOUR_HEIGHT / 60);
   };
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 z-20 flex items-center"
-      style={{ top: `${getCurrentTimePosition()}%` }}
+      className="pointer-events-none absolute inset-x-0 z-20 flex -translate-y-1/2 items-center"
+      style={{ top: `${getCurrentTimePositionPx()}px` }}
     >
       <div className="size-2.5 -translate-x-1/2 rounded-full bg-destructive" />
       <div className="h-px flex-1 bg-destructive" />
@@ -28,3 +31,4 @@ export function CurrentTimeLine() {
     </div>
   );
 }
+

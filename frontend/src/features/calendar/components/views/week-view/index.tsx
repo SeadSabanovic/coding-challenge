@@ -2,11 +2,11 @@ import { format, startOfWeek, addDays, isToday } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 import { useCalendarStore } from '../../../store/calendar-store';
-import { HoursColumn, TimeSlot } from '../shared';
-import { CurrentTimeLine } from '../day-view/current-time-line';
+import { getEventsForDay, getEventTopPixels } from '../../../utils/helpers';
+import { CurrentTimeLine, EventBlock, HoursColumn, TimeSlot } from '../shared';
 
 export function WeekView() {
-  const { selectedDate } = useCalendarStore();
+  const { selectedDate, events } = useCalendarStore();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
@@ -24,7 +24,7 @@ export function WeekView() {
             {weekDays.map((day) => (
               <div
                 key={day.toISOString()}
-                className="flex flex-col items-center justify-center border-b border-l py-2"
+                className="flex flex-col items-center justify-center border-b border-l py-2 first:border-l-0"
               >
                 <span className="text-xs font-medium text-muted-foreground">
                   {format(day, 'EEE')}
@@ -49,16 +49,29 @@ export function WeekView() {
 
           {/* Week grid */}
           <div className="relative grid flex-1 grid-cols-[repeat(7,minmax(100px,1fr))]">
-            {weekDays.map((day) => (
-              <div key={day.toISOString()} className="relative border-l">
-                {/* Hour slots */}
-                {hours.map((hour) => (
-                  <TimeSlot key={hour} />
-                ))}
+            {weekDays.map((day) => {
+              const dayEvents = getEventsForDay(events, day);
 
-                {/* Events will be rendered here */}
-              </div>
-            ))}
+              return (
+                <div key={day.toISOString()} className="relative border-l first:border-l-0">
+                  {/* Hour slots */}
+                  {hours.map((hour) => (
+                    <TimeSlot key={hour} />
+                  ))}
+
+                  {/* Events */}
+                  {dayEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="absolute inset-x-0"
+                      style={{ top: `${getEventTopPixels(event)}px` }}
+                    >
+                      <EventBlock event={event} />
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
 
             {/* Current time line */}
             {hasToday && <CurrentTimeLine />}

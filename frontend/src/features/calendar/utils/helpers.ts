@@ -10,9 +10,13 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  parseISO,
+  isSameDay,
 } from 'date-fns';
 
-import type { CalendarCell, CalendarView } from '../types';
+import { HOUR_HEIGHT } from '../constants';
+
+import type { CalendarCell, CalendarEvent, CalendarView } from '../types';
 
 /**
  * Get range text based on view and selected date
@@ -94,4 +98,20 @@ export function getCalendarCells(selectedDate: Date): CalendarCell[] {
   }));
 
   return [...prevMonthCells, ...currentMonthCells, ...nextMonthCells];
+}
+
+/**
+ * Get events for a specific day
+ */
+export function getEventsForDay(events: CalendarEvent[], date: Date): CalendarEvent[] {
+  return events.filter((event) => isSameDay(parseISO(event.startDate), date));
+}
+
+/**
+ * Calculate event top position in pixels
+ */
+export function getEventTopPixels(event: CalendarEvent): number {
+  const start = parseISO(event.startDate);
+  const startMinutes = start.getHours() * 60 + start.getMinutes();
+  return (startMinutes / 60) * HOUR_HEIGHT;
 }
