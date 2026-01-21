@@ -9,7 +9,7 @@ export function RootLayout() {
       <Nav />
 
       {/* PAGE CONTENT */}
-      <main className="flex-1 py-8 flex flex-col">
+      <main className="flex flex-1 flex-col py-8">
         <Outlet />
       </main>
 

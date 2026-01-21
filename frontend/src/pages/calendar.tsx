@@ -1,5 +1,5 @@
 import { Container } from '@/components/layout/container';
-import { CalendarHeader, MonthView, useCalendarStore } from '@/features/calendar';
+import { CalendarHeader, DayView, MonthView, useCalendarStore } from '@/features/calendar';
 
 export default function CalendarPage() {
   const { selectedView } = useCalendarStore();
@@ -17,11 +17,7 @@ export default function CalendarPage() {
             <p className="text-muted-foreground">Week View - Coming soon</p>
           </div>
         )}
-        {selectedView === 'day' && (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-muted-foreground">Day View - Coming soon</p>
-          </div>
-        )}
+        {selectedView === 'day' && <DayView />}
       </div>
     </Container>
   );

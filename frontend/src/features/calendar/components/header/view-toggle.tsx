@@ -45,4 +45,3 @@ function getButtonClassName(index: number, total: number): string {
   if (index === total - 1) return `${base} -ml-px rounded-l-none`;
   return `${base} -ml-px rounded-none`;
 }
-
