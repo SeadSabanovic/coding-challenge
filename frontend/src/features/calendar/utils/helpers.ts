@@ -12,7 +12,7 @@ import {
   format,
 } from 'date-fns';
 
-import type { CalendarView } from '../types';
+import type { CalendarCell, CalendarView } from '../types';
 
 /**
  * Get range text based on view and selected date
@@ -49,4 +49,49 @@ export function navigateDate(date: Date, view: CalendarView, direction: 'previou
   };
 
   return operations[view](date, 1);
+}
+
+/**
+ * Generate calendar cells for month view (Monday-first weeks)
+ */
+export function getCalendarCells(selectedDate: Date): CalendarCell[] {
+  const currentYear = selectedDate.getFullYear();
+  const currentMonth = selectedDate.getMonth();
+
+  const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+
+  const getFirstDayOfMonth = (year: number, month: number) => {
+    const day = new Date(year, month, 1).getDay();
+    // Convert to Monday-first (Mon=0, Sun=6)
+    return day === 0 ? 6 : day - 1;
+  };
+
+  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+  const firstDayOfMonth = getFirstDayOfMonth(currentYear, currentMonth);
+  const daysInPrevMonth = getDaysInMonth(currentYear, currentMonth - 1);
+  const totalDays = firstDayOfMonth + daysInMonth;
+
+  // Previous month cells
+  const prevMonthCells: CalendarCell[] = Array.from({ length: firstDayOfMonth }, (_, i) => ({
+    day: daysInPrevMonth - firstDayOfMonth + i + 1,
+    currentMonth: false,
+    date: new Date(currentYear, currentMonth - 1, daysInPrevMonth - firstDayOfMonth + i + 1),
+  }));
+
+  // Current month cells
+  const currentMonthCells: CalendarCell[] = Array.from({ length: daysInMonth }, (_, i) => ({
+    day: i + 1,
+    currentMonth: true,
+    date: new Date(currentYear, currentMonth, i + 1),
+  }));
+
+  // Next month cells (fill remaining to complete the grid)
+  const remainingDays = (7 - (totalDays % 7)) % 7;
+  const nextMonthCells: CalendarCell[] = Array.from({ length: remainingDays }, (_, i) => ({
+    day: i + 1,
+    currentMonth: false,
+    date: new Date(currentYear, currentMonth + 1, i + 1),
+  }));
+
+  return [...prevMonthCells, ...currentMonthCells, ...nextMonthCells];
 }
