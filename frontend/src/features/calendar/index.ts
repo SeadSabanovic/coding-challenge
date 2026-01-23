@@ -3,6 +3,7 @@ export { CalendarHeader } from './components/header';
 export { MonthView } from './components/views/month-view';
 export { DayView } from './components/views/day-view';
 export { WeekView } from './components/views/week-view';
+export { EventDialog } from './components/event-dialog';
 
 // Store
 export { useCalendarStore } from './store/calendar-store';

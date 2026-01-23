@@ -8,6 +8,9 @@ const createDate = (daysOffset: number, hours: number, minutes: number = 0): str
   return date.toISOString();
 };
 
+// Get browser timezone for mock data
+const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 export const MOCK_EVENTS: CalendarEvent[] = [
   // Today's events
   {
@@ -15,6 +18,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Team Standup',
     startDate: createDate(0, 9, 0),
     endDate: createDate(0, 9, 30),
+    timezone: browserTimezone,
     color: 'blue',
     description: 'Daily team sync meeting',
   },
@@ -23,6 +27,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Project Review',
     startDate: createDate(0, 11, 0),
     endDate: createDate(0, 12, 30),
+    timezone: browserTimezone,
     color: 'green',
     description: 'Review Q1 project progress',
   },
@@ -31,6 +36,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Lunch with Client',
     startDate: createDate(0, 13, 0),
     endDate: createDate(0, 14, 0),
+    timezone: browserTimezone,
     color: 'yellow',
   },
   {
@@ -38,6 +44,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Code Review',
     startDate: createDate(0, 15, 0),
     endDate: createDate(0, 16, 0),
+    timezone: browserTimezone,
     color: 'purple',
   },
 
@@ -47,6 +54,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Sprint Planning',
     startDate: createDate(1, 10, 0),
     endDate: createDate(1, 11, 30),
+    timezone: browserTimezone,
     color: 'blue',
   },
   {
@@ -54,6 +62,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Design Review',
     startDate: createDate(1, 14, 0),
     endDate: createDate(1, 15, 0),
+    timezone: browserTimezone,
     color: 'orange',
   },
 
@@ -63,6 +72,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Client Meeting',
     startDate: createDate(2, 9, 0),
     endDate: createDate(2, 10, 30),
+    timezone: browserTimezone,
     color: 'red',
   },
   {
@@ -70,6 +80,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Training Session',
     startDate: createDate(2, 13, 0),
     endDate: createDate(2, 15, 0),
+    timezone: browserTimezone,
     color: 'green',
   },
 
@@ -79,6 +90,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Interview',
     startDate: createDate(-1, 11, 0),
     endDate: createDate(-1, 12, 0),
+    timezone: browserTimezone,
     color: 'purple',
   },
 
@@ -88,7 +100,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     title: 'Workshop',
     startDate: createDate(-3, 9, 0),
     endDate: createDate(-3, 12, 0),
+    timezone: browserTimezone,
     color: 'blue',
   },
 ];
-

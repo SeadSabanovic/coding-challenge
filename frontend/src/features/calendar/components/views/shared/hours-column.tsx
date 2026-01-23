@@ -22,4 +22,3 @@ export function HoursColumn({ hours, className }: HoursColumnProps) {
     </div>
   );
 }
-

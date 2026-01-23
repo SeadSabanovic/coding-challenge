@@ -1,25 +1,16 @@
 import { isToday, format, parseISO } from 'date-fns';
 
 import { cn } from '@/lib/utils';
+import { EVENT_BADGE_COLORS } from '../../../constants';
 import { useCalendarStore } from '../../../store/calendar-store';
 import { getEventsForDay } from '../../../utils/helpers';
 
-import type { CalendarCell, CalendarEvent } from '../../../types';
+import type { CalendarCell } from '../../../types';
 
 interface DayCellProps {
   cell: CalendarCell;
   isLastRow?: boolean;
 }
-
-// Mixed variant - colored background + dot + text
-const badgeColors: Record<CalendarEvent['color'], string> = {
-  blue: 'border-blue-200 bg-blue-50 text-blue-700 [&_.dot]:bg-blue-500',
-  green: 'border-green-200 bg-green-50 text-green-700 [&_.dot]:bg-green-500',
-  red: 'border-red-200 bg-red-50 text-red-700 [&_.dot]:bg-red-500',
-  yellow: 'border-yellow-200 bg-yellow-50 text-yellow-700 [&_.dot]:bg-yellow-500',
-  purple: 'border-purple-200 bg-purple-50 text-purple-700 [&_.dot]:bg-purple-500',
-  orange: 'border-orange-200 bg-orange-50 text-orange-700 [&_.dot]:bg-orange-500',
-};
 
 export function DayCell({ cell, isLastRow = false }: DayCellProps) {
   const { setSelectedDate, setSelectedView, events } = useCalendarStore();
@@ -62,7 +53,7 @@ export function DayCell({ cell, isLastRow = false }: DayCellProps) {
             key={event.id}
             className={cn(
               'flex items-center gap-1.5 truncate rounded-md border px-1.5 py-0.5 text-xs',
-              badgeColors[event.color]
+              EVENT_BADGE_COLORS[event.color]
             )}
           >
             <span className="dot size-1.5 shrink-0 rounded-full" />

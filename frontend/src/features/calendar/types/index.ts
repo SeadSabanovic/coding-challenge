@@ -8,8 +8,9 @@ export type EventColor = 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orang
 export interface CalendarEvent {
   id: string;
   title: string;
-  startDate: string;
-  endDate: string;
+  startDate: string; // ISO string in UTC
+  endDate: string; // ISO string in UTC
+  timezone: string; // IANA timezone (e.g., 'Europe/London')
   color: EventColor;
   description?: string;
 }
