@@ -6,9 +6,10 @@ import { useCalendarStore } from '../../../store/calendar-store';
 interface TimeSlotProps {
   date: Date;
   hour: number;
+  isLast?: boolean;
 }
 
-export function TimeSlot({ date, hour }: TimeSlotProps) {
+export function TimeSlot({ date, hour, isLast = false }: TimeSlotProps) {
   const openEventDialog = useCalendarStore((state) => state.openEventDialog);
 
   const handleHalfHourClick = (halfIndex: number) => {
@@ -19,7 +20,7 @@ export function TimeSlot({ date, hour }: TimeSlotProps) {
 
   return (
     <div
-      className="relative border-b border-dashed last:border-b-0"
+      className={`relative ${isLast ? '' : 'border-b'}`}
       style={{ height: `${HOUR_HEIGHT}px` }}
     >
       {/* 30-minute clickable intervals */}
@@ -37,8 +38,15 @@ export function TimeSlot({ date, hour }: TimeSlotProps) {
         />
       ))}
 
-      {/* Half hour line */}
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-dotted border-muted-foreground/20" />
+      {/* Half hour line - custom dash pattern */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-px"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(to right, var(--color-muted-foreground) 0, var(--color-muted-foreground) 8px, transparent 4px, transparent 12px)',
+          opacity: 0.2,
+        }}
+      />
     </div>
   );
 }

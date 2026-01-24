@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 
 import { useCalendarStore } from '../../store/calendar-store';
+import { Button } from '@/components/ui/button';
 
 export function TodayButton() {
   const { setSelectedDate } = useCalendarStore();
@@ -12,15 +13,9 @@ export function TodayButton() {
   };
 
   return (
-    <button
-      className="flex size-14 flex-col items-start overflow-hidden rounded-lg border transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-      onClick={handleClick}
-      aria-label="Go to today"
-    >
-      <p className="flex h-6 w-full items-center justify-center bg-destructive text-center text-xs font-semibold text-primary-foreground">
-        {format(today, 'MMM').toUpperCase()}
-      </p>
+    <Button variant="outline" onClick={handleClick} aria-label="Go to today">
+      <p className="text-sm text-muted-foreground">{format(today, 'MMM').toUpperCase()}</p>
       <p className="flex w-full items-center justify-center text-lg font-bold">{today.getDate()}</p>
-    </button>
+    </Button>
   );
 }

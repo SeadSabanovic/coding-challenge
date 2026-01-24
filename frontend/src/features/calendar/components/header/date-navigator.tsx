@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -7,9 +6,6 @@ import { getRangeText, navigateDate } from '../../utils/helpers';
 
 export function DateNavigator() {
   const { selectedDate, selectedView, setSelectedDate } = useCalendarStore();
-
-  const month = format(selectedDate, 'MMMM');
-  const year = selectedDate.getFullYear();
 
   const handlePrevious = () => {
     setSelectedDate(navigateDate(selectedDate, selectedView, 'previous'));
@@ -20,38 +16,18 @@ export function DateNavigator() {
   };
 
   return (
-    <div className="space-y-0.5">
-      <div className="flex items-center gap-2">
-        <span className="text-lg font-semibold">
-          {month} {year}
-        </span>
-      </div>
+    <div className="flex w-full md:w-fit flex-1 items-center gap-2 order-1 sm:order-0">
+      <Button variant="outline" size="icon" onClick={handlePrevious} aria-label="Previous">
+        <ChevronLeft className="size-4" />
+      </Button>
 
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-7"
-          onClick={handlePrevious}
-          aria-label="Previous"
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
+      <p className="min-w-48 flex-1 text-center text-sm text-muted-foreground">
+        {getRangeText(selectedView, selectedDate)}
+      </p>
 
-        <p className="min-w-48 text-center text-sm text-muted-foreground">
-          {getRangeText(selectedView, selectedDate)}
-        </p>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-7"
-          onClick={handleNext}
-          aria-label="Next"
-        >
-          <ChevronRight className="size-4" />
-        </Button>
-      </div>
+      <Button variant="outline" size="icon" onClick={handleNext} aria-label="Next">
+        <ChevronRight className="size-4" />
+      </Button>
     </div>
   );
 }
