@@ -56,7 +56,7 @@ export function WeekView() {
                 <div key={day.toISOString()} className="relative border-l first:border-l-0">
                   {/* Hour slots */}
                   {hours.map((hour) => (
-                    <TimeSlot key={hour} />
+                    <TimeSlot key={hour} date={day} hour={hour} />
                   ))}
 
                   {/* Events */}

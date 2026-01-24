@@ -1,4 +1,4 @@
-import { CalendarDays, Columns3, Grid2x2 } from 'lucide-react';
+import { CalendarDays, Columns3, Rows3 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useCalendarStore } from '../../store/calendar-store';
@@ -12,9 +12,9 @@ interface ViewOption {
 }
 
 const VIEW_OPTIONS: ViewOption[] = [
-  { value: 'day', icon: <CalendarDays strokeWidth={1.8} />, label: 'Day view' },
+  { value: 'day', icon: <Rows3 strokeWidth={1.8} />, label: 'Day view' },
   { value: 'week', icon: <Columns3 strokeWidth={1.8} />, label: 'Week view' },
-  { value: 'month', icon: <Grid2x2 strokeWidth={1.8} />, label: 'Month view' },
+  { value: 'month', icon: <CalendarDays strokeWidth={1.8} />, label: 'Month view' },
 ];
 
 export function ViewToggle() {

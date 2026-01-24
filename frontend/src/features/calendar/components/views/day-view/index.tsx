@@ -21,7 +21,7 @@ export function DayView() {
           <div className="relative flex-1">
             {/* Hour slots */}
             {hours.map((hour) => (
-              <TimeSlot key={hour} />
+              <TimeSlot key={hour} date={selectedDate} hour={hour} />
             ))}
 
             {/* Events */}

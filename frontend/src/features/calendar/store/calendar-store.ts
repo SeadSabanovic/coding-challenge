@@ -12,12 +12,19 @@ interface CalendarState {
   // Events
   events: CalendarEvent[];
 
+  // Dialog state
+  isEventDialogOpen: boolean;
+  selectedEvent: CalendarEvent | null;
+  defaultDate: Date | null;
+
   // Actions
   setSelectedView: (view: CalendarView) => void;
   setSelectedDate: (date: Date) => void;
   addEvent: (event: CalendarEvent) => void;
   updateEvent: (id: string, event: Partial<CalendarEvent>) => void;
   deleteEvent: (id: string) => void;
+  openEventDialog: (event?: CalendarEvent, defaultDate?: Date) => void;
+  closeEventDialog: () => void;
 }
 
 export const useCalendarStore = create<CalendarState>((set) => ({
@@ -25,6 +32,9 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   selectedView: 'week',
   selectedDate: new Date(),
   events: MOCK_EVENTS,
+  isEventDialogOpen: false,
+  selectedEvent: null,
+  defaultDate: null,
 
   // Actions
   setSelectedView: (view) => set({ selectedView: view }),
@@ -46,4 +56,18 @@ export const useCalendarStore = create<CalendarState>((set) => ({
     set((state) => ({
       events: state.events.filter((event) => event.id !== id),
     })),
+
+  openEventDialog: (event, defaultDate) =>
+    set({
+      isEventDialogOpen: true,
+      selectedEvent: event || null,
+      defaultDate: defaultDate || null,
+    }),
+
+  closeEventDialog: () =>
+    set({
+      isEventDialogOpen: false,
+      selectedEvent: null,
+      defaultDate: null,
+    }),
 }));

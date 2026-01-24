@@ -2,7 +2,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
-import { AlertCircle, Calendar, Clock, Globe, X } from 'lucide-react';
+import { AlertCircle, Calendar, Clock, Globe, Plus, Save, Trash2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
@@ -31,8 +31,15 @@ interface EventFormProps {
 }
 
 export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventFormProps) {
-  const { addEvent, updateEvent, events } = useCalendarStore();
+  const { addEvent, updateEvent, deleteEvent, events } = useCalendarStore();
   const isEditing = !!event;
+
+  const handleDelete = () => {
+    if (event) {
+      deleteEvent(event.id);
+      onSuccess();
+    }
+  };
 
   // Get default values
   const now = defaultDate || new Date();
@@ -63,7 +70,7 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
           startDate: format(now, 'yyyy-MM-dd'),
           startTime: format(now, 'HH:mm'),
           endDate: format(now, 'yyyy-MM-dd'),
-          endTime: format(new Date(now.getTime() + 60 * 60 * 1000), 'HH:mm'),
+          endTime: format(new Date(now.getTime() + 30 * 60 * 1000), 'HH:mm'),
           color: 'blue',
           description: '',
         },
@@ -286,12 +293,29 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
       </div>
 
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          <X />
-          Cancel
-        </Button>
+        {isEditing ? (
+          <Button type="button" variant="destructive" onClick={handleDelete}>
+            <Trash2 />
+            Delete
+          </Button>
+        ) : (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            <X />
+            Cancel
+          </Button>
+        )}
         <Button type="submit" disabled={isSubmitting}>
-          {isEditing ? 'Save Changes' : 'Add Event'}
+          {isEditing ? (
+            <>
+              <Save />
+              Save Changes
+            </>
+          ) : (
+            <>
+              <Plus />
+              Add Event
+            </>
+          )}
         </Button>
       </DialogFooter>
     </form>

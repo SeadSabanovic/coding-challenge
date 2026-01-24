@@ -13,7 +13,7 @@ interface DayCellProps {
 }
 
 export function DayCell({ cell, isLastRow = false }: DayCellProps) {
-  const { setSelectedDate, setSelectedView, events } = useCalendarStore();
+  const { setSelectedDate, setSelectedView, events, openEventDialog } = useCalendarStore();
 
   const { day, currentMonth, date } = cell;
   const isCurrentDay = isToday(date);
@@ -46,13 +46,14 @@ export function DayCell({ cell, isLastRow = false }: DayCellProps) {
         {day}
       </button>
 
-      {/* Event badges - mixed variant */}
       <div className="mt-1 flex flex-col gap-1">
         {dayEvents.map((event) => (
-          <div
+          <button
             key={event.id}
+            type="button"
+            onClick={() => openEventDialog(event)}
             className={cn(
-              'flex items-center gap-1.5 truncate rounded-md border px-1.5 py-0.5 text-xs',
+              'flex cursor-pointer items-center gap-1.5 truncate rounded-md border px-1.5 py-0.5 text-left text-xs transition-opacity hover:opacity-80',
               EVENT_BADGE_COLORS[event.color]
             )}
           >
@@ -61,7 +62,7 @@ export function DayCell({ cell, isLastRow = false }: DayCellProps) {
             <span className="shrink-0 text-[10px] opacity-75">
               {format(parseISO(event.startDate), 'HH:mm')}
             </span>
-          </div>
+          </button>
         ))}
       </div>
     </div>
