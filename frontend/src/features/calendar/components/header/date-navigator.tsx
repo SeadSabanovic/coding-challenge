@@ -16,7 +16,7 @@ export function DateNavigator() {
   };
 
   return (
-    <div className="flex w-full md:w-fit flex-1 items-center gap-2 order-1 sm:order-0">
+    <div className="order-1 flex w-full flex-1 items-center gap-2 sm:order-0 md:w-fit">
       <Button variant="outline" size="icon" onClick={handlePrevious} aria-label="Previous">
         <ChevronLeft className="size-4" />
       </Button>

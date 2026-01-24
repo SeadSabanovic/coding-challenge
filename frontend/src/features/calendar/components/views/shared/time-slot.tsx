@@ -19,10 +19,7 @@ export function TimeSlot({ date, hour, isLast = false }: TimeSlotProps) {
   };
 
   return (
-    <div
-      className={`relative ${isLast ? '' : 'border-b'}`}
-      style={{ height: `${HOUR_HEIGHT}px` }}
-    >
+    <div className={`relative ${isLast ? '' : 'border-b'}`} style={{ height: `${HOUR_HEIGHT}px` }}>
       {/* 30-minute clickable intervals */}
       {[0, 1].map((halfIndex) => (
         <button
