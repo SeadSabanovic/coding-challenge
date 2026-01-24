@@ -1,7 +1,7 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { AlertCircle, Calendar, Clock, Globe, Plus, Save, Trash2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -57,10 +57,11 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
       ? {
           title: event.title,
           timezone: event.timezone,
-          startDate: format(new Date(event.startDate), 'yyyy-MM-dd'),
-          startTime: format(new Date(event.startDate), 'HH:mm'),
-          endDate: format(new Date(event.endDate), 'yyyy-MM-dd'),
-          endTime: format(new Date(event.endDate), 'HH:mm'),
+          // Convert UTC to event's original timezone for display
+          startDate: format(toZonedTime(event.startDate, event.timezone), 'yyyy-MM-dd'),
+          startTime: format(toZonedTime(event.startDate, event.timezone), 'HH:mm'),
+          endDate: format(toZonedTime(event.endDate, event.timezone), 'yyyy-MM-dd'),
+          endTime: format(toZonedTime(event.endDate, event.timezone), 'HH:mm'),
           color: event.color,
           description: event.description || '',
         }
