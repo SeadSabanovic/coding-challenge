@@ -22,7 +22,7 @@ export function HomeComponent() {
         </div>
 
         <StarsBackground
-          starColor="#000"
+          starColor="#c9c9c9"
           className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]"
         />
       </div>
