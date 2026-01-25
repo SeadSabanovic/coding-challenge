@@ -81,7 +81,7 @@
  - [Backend Documentation](./backend/README.md)
  -->
 
-# Evermore Calendar (Full-Stack)
+# Evermore Calendar Scheduling App
 
 ![Evermore Calendar Screenshot](./frontend/public/featured.png)
 
@@ -90,6 +90,12 @@ Full-stack calendar application built as a monorepo:
 - **Frontend**: Vite + React + TypeScript, TailwindCSS + shadcn/ui, TanStack Router, TanStack Query, Zustand, Motion
 - **Backend**: NestJS + Prisma
 - **Database**: PostgreSQL (Docker)
+
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=vite,react,ts,tailwind,nodejs,nestjs,prisma,postgres,docker&perline=9" />
+  </a>
+</p>
 
 ## Features
 
