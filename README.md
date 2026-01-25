@@ -117,6 +117,9 @@ Full-stack calendar application built as a monorepo:
 - **Data fetching & caching**
   - Date-range fetching per view (no “fetch all events”)
   - TanStack Query caching keyed by date range + invalidation on mutations
+  - Request timeouts (AbortController)
+  - Cancels in-flight range requests when navigating quickly
+  - Keeps previous data during refetch to reduce UI flicker
   - Optimistic updates:
     - Update: optimistic in calendar (dialog waits for API to show validation errors)
     - Delete: optimistic removal with rollback
@@ -126,6 +129,9 @@ Full-stack calendar application built as a monorepo:
   - Page transitions (fade)
   - Staggered event entrance animations (day / week / month)
   - Responsive navigation (mobile drawer + desktop nav)
+- **Accessibility (a11y)**
+  - Accessible form fields (labeling + helper text via aria-describedby)
+  - Keyboard-friendly navigation and focus-visible styling
 - **Development helpers**
   - Dev-only backend delay to simulate real network latency
   - Dev-only DB seed (auto-inserts mock events when Event table is empty)
