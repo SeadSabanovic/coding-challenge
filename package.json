@@ -7,6 +7,9 @@
     "backend",
     "frontend"
   ],
+  "overrides": {
+    "lodash": "4.17.23"
+  },
   "scripts": {
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

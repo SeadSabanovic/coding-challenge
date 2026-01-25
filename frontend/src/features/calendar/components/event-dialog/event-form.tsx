@@ -19,7 +19,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Textarea } from '@/components/ui/textarea';
 
 import { EVENT_COLORS, TIMEZONES, getDefaultTimezone } from '../../constants';
-import { useCalendarStore } from '../../store/calendar-store';
+import { useCreateEvent, useUpdateEvent, useDeleteEvent, ApiError } from '../../hooks/use-events';
 import type { CalendarEvent } from '../../types';
 import { eventFormSchema, type EventFormData } from './event-schema';
 
@@ -31,13 +31,16 @@ interface EventFormProps {
 }
 
 export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventFormProps) {
-  const { addEvent, updateEvent, deleteEvent, events } = useCalendarStore();
+  const createEvent = useCreateEvent();
+  const updateEvent = useUpdateEvent();
+  const deleteEvent = useDeleteEvent();
   const isEditing = !!event;
 
   const handleDelete = () => {
     if (event) {
-      deleteEvent(event.id);
-      onSuccess();
+      deleteEvent.mutate(event.id, {
+        onSuccess: () => onSuccess(),
+      });
     }
   };
 
@@ -83,48 +86,33 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
     return fromZonedTime(localDateTimeString, tz);
   };
 
-  // Check for overlapping events
-  const hasOverlap = (newStartUTC: Date, newEndUTC: Date, excludeId?: string): boolean => {
-    return events.some((e) => {
-      if (excludeId && e.id === excludeId) return false;
-      const eventStart = new Date(e.startDate);
-      const eventEnd = new Date(e.endDate);
-      return newStartUTC < eventEnd && newEndUTC > eventStart;
-    });
-  };
-
-  const onSubmit = (data: EventFormData) => {
+  const onSubmit = async (data: EventFormData) => {
     const startDateTimeUTC = toUTC(data.startDate, data.startTime, data.timezone);
     const endDateTimeUTC = toUTC(data.endDate, data.endTime, data.timezone);
 
-    // Check for overlapping events
-    if (hasOverlap(startDateTimeUTC, endDateTimeUTC, event?.id)) {
-      setError('root', { message: 'This time slot overlaps with an existing event' });
-      return;
-    }
+    const payload = {
+      title: data.title.trim(),
+      startDate: startDateTimeUTC.toISOString(),
+      endDate: endDateTimeUTC.toISOString(),
+      timezone: data.timezone,
+      color: data.color,
+      description: data.description?.trim() || undefined,
+    };
 
-    if (isEditing && event) {
-      updateEvent(event.id, {
-        title: data.title.trim(),
-        startDate: startDateTimeUTC.toISOString(),
-        endDate: endDateTimeUTC.toISOString(),
-        timezone: data.timezone,
-        color: data.color,
-        description: data.description?.trim() || undefined,
-      });
-    } else {
-      addEvent({
-        id: crypto.randomUUID(),
-        title: data.title.trim(),
-        startDate: startDateTimeUTC.toISOString(),
-        endDate: endDateTimeUTC.toISOString(),
-        timezone: data.timezone,
-        color: data.color,
-        description: data.description?.trim() || undefined,
-      });
+    try {
+      if (isEditing && event) {
+        await updateEvent.mutateAsync({ id: event.id, payload });
+      } else {
+        await createEvent.mutateAsync(payload);
+      }
+      onSuccess();
+    } catch (error) {
+      if (error instanceof ApiError && error.statusCode === 409) {
+        setError('root', { message: 'This time slot overlaps with an existing event' });
+      } else {
+        setError('root', { message: 'Failed to save event. Please try again.' });
+      }
     }
-
-    onSuccess();
   };
 
   return (
@@ -295,9 +283,14 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
 
       <DialogFooter>
         {isEditing ? (
-          <Button type="button" variant="destructive" onClick={handleDelete}>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={deleteEvent.isPending}
+          >
             <Trash2 />
-            Delete
+            {deleteEvent.isPending ? 'Deleting...' : 'Delete'}
           </Button>
         ) : (
           <Button type="button" variant="outline" onClick={onCancel}>
@@ -305,16 +298,19 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
             Cancel
           </Button>
         )}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          disabled={isSubmitting || createEvent.isPending || updateEvent.isPending}
+        >
           {isEditing ? (
             <>
               <Save />
-              Save Changes
+              {updateEvent.isPending ? 'Saving...' : 'Save Changes'}
             </>
           ) : (
             <>
               <Plus />
-              Add Event
+              {createEvent.isPending ? 'Adding...' : 'Add Event'}
             </>
           )}
         </Button>

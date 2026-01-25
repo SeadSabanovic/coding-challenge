@@ -2,11 +2,13 @@ import { format, startOfWeek, addDays, isToday } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 import { useCalendarStore } from '../../../store/calendar-store';
+import { useEvents } from '../../../hooks/use-events';
 import { getEventsForDay, getEventTopPixels } from '../../../utils/helpers';
 import { CurrentTimeLine, EventBlock, HoursColumn, TimeSlot } from '../shared';
 
 export function WeekView() {
-  const { selectedDate, events } = useCalendarStore();
+  const { selectedDate } = useCalendarStore();
+  const { data: events = [] } = useEvents();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday

@@ -3,6 +3,7 @@ import { isToday, format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { EVENT_BADGE_COLORS } from '../../../constants';
 import { useCalendarStore } from '../../../store/calendar-store';
+import { useEvents } from '../../../hooks/use-events';
 import { getEventsForDay } from '../../../utils/helpers';
 
 import type { CalendarCell } from '../../../types';
@@ -13,7 +14,8 @@ interface DayCellProps {
 }
 
 export function DayCell({ cell, isLastRow = false }: DayCellProps) {
-  const { setSelectedDate, setSelectedView, events, openEventDialog } = useCalendarStore();
+  const { setSelectedDate, setSelectedView, openEventDialog } = useCalendarStore();
+  const { data: events = [] } = useEvents();
 
   const { day, currentMonth, date } = cell;
   const isCurrentDay = isToday(date);
