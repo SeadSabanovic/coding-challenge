@@ -8,8 +8,8 @@ import {
   type CreateEventPayload,
   type UpdateEventPayload,
   type DateRangeParams,
-  ApiError,
 } from '@/api/events';
+import { ApiError } from '@/api/http';
 import type { CalendarEvent } from '../types';
 
 // Query key factory

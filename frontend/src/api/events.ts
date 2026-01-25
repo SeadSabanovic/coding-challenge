@@ -1,5 +1,8 @@
 import type { CalendarEvent, EventColor } from '@/features/calendar/types';
 
+import { API_BASE_URL } from './config';
+import { fetchWithTimeout, handleResponse } from './http';
+
 function isEventColor(value: string): value is EventColor {
   return (
     value === 'blue' ||
@@ -10,31 +13,6 @@ function isEventColor(value: string): value is EventColor {
     value === 'orange'
   );
 }
-
-function resolveApiBaseUrl(): string {
-  const raw = import.meta.env.VITE_API_URL;
-
-  if (!raw) {
-    if (import.meta.env.DEV) {
-      throw new Error(
-        'Missing VITE_API_URL. Set frontend/.env VITE_API_URL=http://localhost:3000/api'
-      );
-    }
-
-    return 'http://localhost:3000/api';
-  }
-
-  const url = new URL(raw);
-
-  let pathname = url.pathname;
-  if (pathname.endsWith('/')) pathname = pathname.slice(0, -1);
-  if (!pathname.endsWith('/api')) pathname = `${pathname}/api`;
-  url.pathname = pathname;
-
-  return url.toString();
-}
-
-const API_BASE_URL = resolveApiBaseUrl();
 
 // API response type (matches backend Event model)
 interface ApiEvent {
@@ -77,35 +55,6 @@ export interface CreateEventPayload {
 // Update event payload
 export type UpdateEventPayload = Partial<CreateEventPayload>;
 
-// API Error type
-export class ApiError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.name = 'ApiError';
-    this.statusCode = statusCode;
-  }
-}
-
-// Helper to handle API responses
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new ApiError(
-      errorData.message || `Request failed with status ${response.status}`,
-      response.status
-    );
-  }
-
-  // Handle 204 No Content
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
-}
-
 // Date range params for fetching events
 export interface DateRangeParams {
   from: string; // ISO date string
@@ -118,21 +67,21 @@ export async function getEvents(params: DateRangeParams): Promise<CalendarEvent[
   url.searchParams.set('from', params.from);
   url.searchParams.set('to', params.to);
 
-  const response = await fetch(url.toString());
+  const response = await fetchWithTimeout(url);
   const apiEvents = await handleResponse<ApiEvent[]>(response);
   return apiEvents.map(toCalendarEvent);
 }
 
 // Get single event
 export async function getEvent(id: string): Promise<CalendarEvent> {
-  const response = await fetch(`${API_BASE_URL}/events/${id}`);
+  const response = await fetchWithTimeout(`${API_BASE_URL}/events/${id}`);
   const apiEvent = await handleResponse<ApiEvent>(response);
   return toCalendarEvent(apiEvent);
 }
 
 // Create event
 export async function createEvent(payload: CreateEventPayload): Promise<CalendarEvent> {
-  const response = await fetch(`${API_BASE_URL}/events`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -143,7 +92,7 @@ export async function createEvent(payload: CreateEventPayload): Promise<Calendar
 
 // Update event
 export async function updateEvent(id: string, payload: UpdateEventPayload): Promise<CalendarEvent> {
-  const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/events/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -154,7 +103,7 @@ export async function updateEvent(id: string, payload: UpdateEventPayload): Prom
 
 // Delete event
 export async function deleteEvent(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/events/${id}`, {
     method: 'DELETE',
   });
   await handleResponse<void>(response);
