@@ -62,12 +62,15 @@ export interface DateRangeParams {
 }
 
 // Get events by date range
-export async function getEvents(params: DateRangeParams): Promise<CalendarEvent[]> {
+export async function getEvents(
+  params: DateRangeParams,
+  options?: { signal?: AbortSignal }
+): Promise<CalendarEvent[]> {
   const url = new URL(`${API_BASE_URL}/events`);
   url.searchParams.set('from', params.from);
   url.searchParams.set('to', params.to);
 
-  const response = await fetchWithTimeout(url);
+  const response = await fetchWithTimeout(url, { signal: options?.signal });
   const apiEvents = await handleResponse<ApiEvent[]>(response);
   return apiEvents.map(toCalendarEvent);
 }

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 
 import {
   getEvents,
@@ -14,15 +15,17 @@ import type { CalendarEvent } from '../types';
 
 // Query key factory
 export const eventsKeys = {
-  all: ['events'] as const,
-  range: (params: DateRangeParams) => ['events', params] as const,
+  root: ['events'] as const,
+  list: () => [...eventsKeys.root, 'list'] as const,
+  range: (params: DateRangeParams) => [...eventsKeys.list(), params.from, params.to] as const,
 };
 
 // Fetch events by date range
 export function useEvents(params: DateRangeParams) {
   return useQuery({
     queryKey: eventsKeys.range(params),
-    queryFn: () => getEvents(params),
+    queryFn: ({ signal }) => getEvents(params, { signal }),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -33,7 +36,7 @@ export function useCreateEvent() {
   return useMutation({
     mutationFn: (payload: CreateEventPayload) => createEvent(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: eventsKeys.all });
+      queryClient.invalidateQueries({ queryKey: eventsKeys.root });
     },
   });
 }
@@ -48,15 +51,15 @@ export function useUpdateEvent() {
 
     onMutate: async ({ id, payload }) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: eventsKeys.all });
+      await queryClient.cancelQueries({ queryKey: eventsKeys.root });
 
       // Snapshot all event caches
       const previousCaches = queryClient.getQueriesData<CalendarEvent[]>({
-        queryKey: eventsKeys.all,
+        queryKey: eventsKeys.root,
       });
 
       // Optimistically update all caches that contain this event
-      queryClient.setQueriesData<CalendarEvent[]>({ queryKey: eventsKeys.all }, (old) => {
+      queryClient.setQueriesData<CalendarEvent[]>({ queryKey: eventsKeys.root }, (old) => {
         if (!old) return old;
         return old.map((event) => (event.id === id ? { ...event, ...payload } : event));
       });
@@ -75,7 +78,7 @@ export function useUpdateEvent() {
 
     onSettled: () => {
       // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: eventsKeys.all });
+      queryClient.invalidateQueries({ queryKey: eventsKeys.root });
     },
   });
 }
@@ -89,15 +92,15 @@ export function useDeleteEvent() {
 
     onMutate: async (id) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: eventsKeys.all });
+      await queryClient.cancelQueries({ queryKey: eventsKeys.root });
 
       // Snapshot all event caches
       const previousCaches = queryClient.getQueriesData<CalendarEvent[]>({
-        queryKey: eventsKeys.all,
+        queryKey: eventsKeys.root,
       });
 
       // Optimistically remove from all caches
-      queryClient.setQueriesData<CalendarEvent[]>({ queryKey: eventsKeys.all }, (old) => {
+      queryClient.setQueriesData<CalendarEvent[]>({ queryKey: eventsKeys.root }, (old) => {
         if (!old) return old;
         return old.filter((event) => event.id !== id);
       });
@@ -116,7 +119,7 @@ export function useDeleteEvent() {
 
     onSettled: () => {
       // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: eventsKeys.all });
+      queryClient.invalidateQueries({ queryKey: eventsKeys.root });
     },
   });
 }

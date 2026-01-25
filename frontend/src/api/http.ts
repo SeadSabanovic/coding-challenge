@@ -7,6 +7,16 @@ export async function fetchWithTimeout(
 ): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const externalSignal = init?.signal;
+
+  const onExternalAbort = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalSignal.addEventListener('abort', onExternalAbort);
+    }
+  }
 
   try {
     return await fetch(input, {
@@ -15,6 +25,9 @@ export async function fetchWithTimeout(
     });
   } finally {
     clearTimeout(timeoutId);
+    if (externalSignal && !externalSignal.aborted) {
+      externalSignal.removeEventListener('abort', onExternalAbort);
+    }
   }
 }
 
