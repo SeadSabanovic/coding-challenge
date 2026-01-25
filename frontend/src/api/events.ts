@@ -1,6 +1,40 @@
 import type { CalendarEvent, EventColor } from '@/features/calendar/types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+function isEventColor(value: string): value is EventColor {
+  return (
+    value === 'blue' ||
+    value === 'green' ||
+    value === 'red' ||
+    value === 'yellow' ||
+    value === 'purple' ||
+    value === 'orange'
+  );
+}
+
+function resolveApiBaseUrl(): string {
+  const raw = import.meta.env.VITE_API_URL;
+
+  if (!raw) {
+    if (import.meta.env.DEV) {
+      throw new Error(
+        'Missing VITE_API_URL. Set frontend/.env VITE_API_URL=http://localhost:3000/api'
+      );
+    }
+
+    return 'http://localhost:3000/api';
+  }
+
+  const url = new URL(raw);
+
+  let pathname = url.pathname;
+  if (pathname.endsWith('/')) pathname = pathname.slice(0, -1);
+  if (!pathname.endsWith('/api')) pathname = `${pathname}/api`;
+  url.pathname = pathname;
+
+  return url.toString();
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 // API response type (matches backend Event model)
 interface ApiEvent {
@@ -9,22 +43,26 @@ interface ApiEvent {
   startDate: string;
   endDate: string;
   timezone: string;
-  color: string;
+  color: EventColor;
   description: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 // Transform API response to frontend type
-const toCalendarEvent = (apiEvent: ApiEvent): CalendarEvent => ({
-  id: apiEvent.id,
-  title: apiEvent.title,
-  startDate: apiEvent.startDate,
-  endDate: apiEvent.endDate,
-  timezone: apiEvent.timezone,
-  color: apiEvent.color as EventColor,
-  description: apiEvent.description ?? undefined,
-});
+const toCalendarEvent = (apiEvent: ApiEvent): CalendarEvent => {
+  const color = isEventColor(apiEvent.color) ? apiEvent.color : 'blue';
+
+  return {
+    id: apiEvent.id,
+    title: apiEvent.title,
+    startDate: apiEvent.startDate,
+    endDate: apiEvent.endDate,
+    timezone: apiEvent.timezone,
+    color,
+    description: apiEvent.description ?? undefined,
+  };
+};
 
 // Create event payload
 export interface CreateEventPayload {
