@@ -25,7 +25,7 @@ const CalendarIndexRoute = CalendarIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/calendar': typeof CalendarIndexRoute
+  '/calendar/': typeof CalendarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -38,7 +38,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/calendar'
+  fullPaths: '/' | '/calendar/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/calendar'
   id: '__root__' | '/' | '/calendar/'
@@ -61,7 +61,7 @@ declare module '@tanstack/react-router' {
     '/calendar/': {
       id: '/calendar/'
       path: '/calendar'
-      fullPath: '/calendar'
+      fullPath: '/calendar/'
       preLoaderRoute: typeof CalendarIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

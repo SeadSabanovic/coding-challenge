@@ -31,7 +31,15 @@ export const useCalendarStore = create<CalendarState>()(
       defaultDate: null,
 
       // Actions
-      setSelectedView: (view) => set({ selectedView: view }),
+      setSelectedView: (view) =>
+        set((state) =>
+          state.selectedView === view
+            ? state
+            : {
+                selectedView: view,
+                selectedDate: new Date(),
+              }
+        ),
       setSelectedDate: (date) => set({ selectedDate: date }),
 
       openEventDialog: (event, defaultDate) =>
