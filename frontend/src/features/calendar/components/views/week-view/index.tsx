@@ -26,7 +26,7 @@ export function WeekView() {
     [weekStart.getTime(), weekEnd.getTime()]
   );
 
-  const { data: events = [] } = useEvents(dateRange);
+  const { data: events = [], isLoading } = useEvents(dateRange);
 
   const hasToday = weekDays.some((day) => isToday(day));
 
@@ -82,6 +82,7 @@ export function WeekView() {
                         date={day}
                         hour={hour}
                         isLast={index === hours.length - 1}
+                        isLoading={isLoading}
                       />
                     ))}
 

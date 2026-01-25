@@ -19,7 +19,7 @@ export function DayView() {
     [selectedDate]
   );
 
-  const { data: events = [] } = useEvents(dateRange);
+  const { data: events = [], isLoading } = useEvents(dateRange);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const isToday = selectedDate.toDateString() === new Date().toDateString();
@@ -42,6 +42,7 @@ export function DayView() {
                 date={selectedDate}
                 hour={hour}
                 isLast={index === hours.length - 1}
+                isLoading={isLoading}
               />
             ))}
 

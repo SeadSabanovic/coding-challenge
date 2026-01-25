@@ -1,5 +1,6 @@
 import { setHours, setMinutes } from 'date-fns';
 
+import { cn } from '@/lib/utils';
 import { HOUR_HEIGHT } from '../../../constants';
 import { useCalendarStore } from '../../../store/calendar-store';
 
@@ -7,9 +8,10 @@ interface TimeSlotProps {
   date: Date;
   hour: number;
   isLast?: boolean;
+  isLoading?: boolean;
 }
 
-export function TimeSlot({ date, hour, isLast = false }: TimeSlotProps) {
+export function TimeSlot({ date, hour, isLast = false, isLoading = false }: TimeSlotProps) {
   const openEventDialog = useCalendarStore((state) => state.openEventDialog);
 
   const handleHalfHourClick = (halfIndex: number) => {
@@ -19,7 +21,14 @@ export function TimeSlot({ date, hour, isLast = false }: TimeSlotProps) {
   };
 
   return (
-    <div className={`relative ${isLast ? '' : 'border-b'}`} style={{ height: `${HOUR_HEIGHT}px` }}>
+    <div
+      className={cn(
+        'relative',
+        !isLast && 'border-b',
+        isLoading && 'pointer-events-none animate-pulse bg-muted/30'
+      )}
+      style={{ height: `${HOUR_HEIGHT}px` }}
+    >
       {/* 30-minute clickable intervals */}
       {[0, 1].map((halfIndex) => (
         <button

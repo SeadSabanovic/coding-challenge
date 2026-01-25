@@ -12,9 +12,10 @@ interface DayCellProps {
   cell: CalendarCell;
   events: CalendarEvent[];
   isLastRow?: boolean;
+  isLoading?: boolean;
 }
 
-export function DayCell({ cell, events, isLastRow = false }: DayCellProps) {
+export function DayCell({ cell, events, isLastRow = false, isLoading = false }: DayCellProps) {
   const { setSelectedDate, setSelectedView, openEventDialog } = useCalendarStore();
 
   const { day, currentMonth, date } = cell;
@@ -31,10 +32,11 @@ export function DayCell({ cell, events, isLastRow = false }: DayCellProps) {
   return (
     <div
       className={cn(
-        'flex min-h-24 flex-col p-1',
+        'flex min-h-24 flex-col p-1 transition-all',
         !isSunday && 'border-r',
         !isLastRow && 'border-b',
-        !currentMonth && 'bg-accent/70'
+        !currentMonth && 'bg-accent/70',
+        isLoading && currentMonth && 'animate-pulse bg-muted/20'
       )}
     >
       <button

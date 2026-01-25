@@ -24,7 +24,7 @@ export function MonthView() {
     };
   }, [cells]);
 
-  const { data: events = [] } = useEvents(dateRange);
+  const { data: events = [], isLoading } = useEvents(dateRange);
 
   return (
     <div className="relative flex-1">
@@ -52,6 +52,7 @@ export function MonthView() {
               cell={cell}
               events={events}
               isLastRow={index >= cells.length - 7}
+              isLoading={isLoading}
             />
           ))}
         </div>
