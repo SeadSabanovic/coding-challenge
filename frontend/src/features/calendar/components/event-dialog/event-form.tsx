@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Textarea } from '@/components/ui/textarea';
+import { Spinner } from '@/components/ui/spinner';
 
 import { EVENT_COLORS, TIMEZONES, getDefaultTimezone } from '../../constants';
 import { useCreateEvent, useUpdateEvent, useDeleteEvent, ApiError } from '../../hooks/use-events';
@@ -289,8 +290,8 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
             onClick={handleDelete}
             disabled={deleteEvent.isPending}
           >
-            <Trash2 />
-            {deleteEvent.isPending ? 'Deleting...' : 'Delete'}
+            {deleteEvent.isPending ? <Spinner data-icon="inline-start" /> : <Trash2 />}
+            Delete
           </Button>
         ) : (
           <Button type="button" variant="outline" onClick={onCancel}>
@@ -304,13 +305,13 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
         >
           {isEditing ? (
             <>
-              <Save />
-              {updateEvent.isPending ? 'Saving...' : 'Save Changes'}
+              {updateEvent.isPending ? <Spinner data-icon="inline-start" /> : <Save />}
+              Save Changes
             </>
           ) : (
             <>
-              <Plus />
-              {createEvent.isPending ? 'Adding...' : 'Add Event'}
+              {createEvent.isPending ? <Spinner data-icon="inline-start" /> : <Plus />}
+              Add Event
             </>
           )}
         </Button>
