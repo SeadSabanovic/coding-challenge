@@ -12,18 +12,17 @@ export function WeekView() {
   const { selectedDate } = useCalendarStore();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
-  const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
-  const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
+  const weekStart = useMemo(() => startOfWeek(selectedDate, { weekStartsOn: 1 }), [selectedDate]);
+  const weekEnd = useMemo(() => endOfWeek(selectedDate, { weekStartsOn: 1 }), [selectedDate]);
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
-  // Calculate date range for the week (use getTime() for stable deps)
+  // Calculate date range for the week
   const dateRange = useMemo(
     () => ({
       from: weekStart.toISOString(),
       to: weekEnd.toISOString(),
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [weekStart.getTime(), weekEnd.getTime()]
+    [weekStart, weekEnd]
   );
 
   const { data: events = [], isLoading } = useEvents(dateRange);
