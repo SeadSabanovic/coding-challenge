@@ -1,4 +1,5 @@
-import { format, startOfWeek, addDays, isToday } from 'date-fns';
+import { useMemo } from 'react';
+import { format, startOfWeek, endOfWeek, addDays, isToday } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 import { useCalendarStore } from '../../../store/calendar-store';
@@ -8,11 +9,23 @@ import { CurrentTimeLine, EventBlock, HoursColumn, TimeSlot } from '../shared';
 
 export function WeekView() {
   const { selectedDate } = useCalendarStore();
-  const { data: events = [] } = useEvents();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
+  const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  // Calculate date range for the week (use getTime() for stable deps)
+  const dateRange = useMemo(
+    () => ({
+      from: weekStart.toISOString(),
+      to: weekEnd.toISOString(),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [weekStart.getTime(), weekEnd.getTime()]
+  );
+
+  const { data: events = [] } = useEvents(dateRange);
 
   const hasToday = weekDays.some((day) => isToday(day));
 

@@ -13,6 +13,17 @@ export class EventsService {
     });
   }
 
+  async findByDateRange(from: Date, to: Date) {
+    // Find events that overlap with the given date range
+    // An event overlaps if: event.startDate < to AND event.endDate > from
+    return this.prisma.event.findMany({
+      where: {
+        AND: [{ startDate: { lt: to } }, { endDate: { gt: from } }],
+      },
+      orderBy: { startDate: 'asc' },
+    });
+  }
+
   async findOne(id: string) {
     const event = await this.prisma.event.findUnique({ where: { id } });
     if (!event) {

@@ -7,53 +7,116 @@ import {
   deleteEvent,
   type CreateEventPayload,
   type UpdateEventPayload,
+  type DateRangeParams,
   ApiError,
 } from '@/api/events';
+import type { CalendarEvent } from '../types';
 
-// Query key
-export const eventsQueryKey = ['events'] as const;
+// Query key factory
+export const eventsKeys = {
+  all: ['events'] as const,
+  range: (params: DateRangeParams) => ['events', params] as const,
+};
 
-// Fetch all events
-export function useEvents() {
+// Fetch events by date range
+export function useEvents(params: DateRangeParams) {
   return useQuery({
-    queryKey: eventsQueryKey,
-    queryFn: getEvents,
+    queryKey: eventsKeys.range(params),
+    queryFn: () => getEvents(params),
   });
 }
 
-// Create event mutation
+// Create event mutation (no optimistic update - uses loading states)
 export function useCreateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: CreateEventPayload) => createEvent(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: eventsQueryKey });
+      queryClient.invalidateQueries({ queryKey: eventsKeys.all });
     },
   });
 }
 
-// Update event mutation
+// Update event mutation with optimistic update
 export function useUpdateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateEventPayload }) =>
       updateEvent(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: eventsQueryKey });
+
+    onMutate: async ({ id, payload }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: eventsKeys.all });
+
+      // Snapshot all event caches
+      const previousCaches = queryClient.getQueriesData<CalendarEvent[]>({
+        queryKey: eventsKeys.all,
+      });
+
+      // Optimistically update all caches that contain this event
+      queryClient.setQueriesData<CalendarEvent[]>({ queryKey: eventsKeys.all }, (old) => {
+        if (!old) return old;
+        return old.map((event) => (event.id === id ? { ...event, ...payload } : event));
+      });
+
+      return { previousCaches };
+    },
+
+    onError: (_err, _variables, context) => {
+      // Rollback to previous state
+      if (context?.previousCaches) {
+        context.previousCaches.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: eventsKeys.all });
     },
   });
 }
 
-// Delete event mutation
+// Delete event mutation with optimistic delete
 export function useDeleteEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => deleteEvent(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: eventsQueryKey });
+
+    onMutate: async (id) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: eventsKeys.all });
+
+      // Snapshot all event caches
+      const previousCaches = queryClient.getQueriesData<CalendarEvent[]>({
+        queryKey: eventsKeys.all,
+      });
+
+      // Optimistically remove from all caches
+      queryClient.setQueriesData<CalendarEvent[]>({ queryKey: eventsKeys.all }, (old) => {
+        if (!old) return old;
+        return old.filter((event) => event.id !== id);
+      });
+
+      return { previousCaches };
+    },
+
+    onError: (_err, _id, context) => {
+      // Rollback to previous state
+      if (context?.previousCaches) {
+        context.previousCaches.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: eventsKeys.all });
     },
   });
 }

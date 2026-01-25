@@ -38,9 +38,9 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
 
   const handleDelete = () => {
     if (event) {
-      deleteEvent.mutate(event.id, {
-        onSuccess: () => onSuccess(),
-      });
+      // Close immediately (optimistic) - rollback happens automatically on error
+      onSuccess();
+      deleteEvent.mutate(event.id);
     }
   };
 

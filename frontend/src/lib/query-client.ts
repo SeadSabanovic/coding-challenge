@@ -1,4 +1,5 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
+import { ApiError } from '@/api/events';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +18,15 @@ export const queryClient = new QueryClient({
 
   mutationCache: new MutationCache({
     onError: (error) => {
-      console.error(error.message ? error.message : 'An error occurred');
+      const message = error.message || 'An error occurred';
+
+      // 4xx errors are client/validation errors - use warn
+      // 5xx errors are server errors - use error
+      if (error instanceof ApiError && error.statusCode < 500) {
+        console.warn(message);
+      } else {
+        console.error(message);
+      }
     },
   }),
 });

@@ -1,3 +1,6 @@
+import { useMemo } from 'react';
+import { startOfDay, endOfDay } from 'date-fns';
+
 import { useCalendarStore } from '../../../store/calendar-store';
 import { useEvents } from '../../../hooks/use-events';
 import { getEventsForDay, getEventTopPixels } from '../../../utils/helpers';
@@ -5,7 +8,17 @@ import { CurrentTimeLine, EventBlock, HoursColumn, TimeSlot } from '../shared';
 
 export function DayView() {
   const { selectedDate } = useCalendarStore();
-  const { data: events = [] } = useEvents();
+
+  // Calculate date range for the selected day
+  const dateRange = useMemo(
+    () => ({
+      from: startOfDay(selectedDate).toISOString(),
+      to: endOfDay(selectedDate).toISOString(),
+    }),
+    [selectedDate]
+  );
+
+  const { data: events = [] } = useEvents(dateRange);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const isToday = selectedDate.toDateString() === new Date().toDateString();

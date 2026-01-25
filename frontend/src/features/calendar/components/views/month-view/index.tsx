@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { startOfDay, endOfDay } from 'date-fns';
 
 import { useCalendarStore } from '../../../store/calendar-store';
+import { useEvents } from '../../../hooks/use-events';
 import { getCalendarCells } from '../../../utils/helpers';
 import { DayCell } from './day-cell';
 
@@ -11,6 +13,18 @@ export function MonthView() {
 
   const cells = useMemo(() => getCalendarCells(selectedDate), [selectedDate]);
   const numberOfWeeks = cells.length / 7;
+
+  // Calculate date range for all visible cells (includes overflow days)
+  const dateRange = useMemo(() => {
+    const firstCell = cells[0];
+    const lastCell = cells[cells.length - 1];
+    return {
+      from: startOfDay(firstCell.date).toISOString(),
+      to: endOfDay(lastCell.date).toISOString(),
+    };
+  }, [cells]);
+
+  const { data: events = [] } = useEvents(dateRange);
 
   return (
     <div className="relative flex-1">
@@ -36,6 +50,7 @@ export function MonthView() {
             <DayCell
               key={cell.date.toISOString()}
               cell={cell}
+              events={events}
               isLastRow={index >= cells.length - 7}
             />
           ))}

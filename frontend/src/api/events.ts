@@ -68,9 +68,19 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
-// Get all events
-export async function getEvents(): Promise<CalendarEvent[]> {
-  const response = await fetch(`${API_BASE_URL}/events`);
+// Date range params for fetching events
+export interface DateRangeParams {
+  from: string; // ISO date string
+  to: string; // ISO date string
+}
+
+// Get events by date range
+export async function getEvents(params: DateRangeParams): Promise<CalendarEvent[]> {
+  const url = new URL(`${API_BASE_URL}/events`);
+  url.searchParams.set('from', params.from);
+  url.searchParams.set('to', params.to);
+
+  const response = await fetch(url.toString());
   const apiEvents = await handleResponse<ApiEvent[]>(response);
   return apiEvents.map(toCalendarEvent);
 }
