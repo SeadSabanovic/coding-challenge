@@ -1,4 +1,5 @@
-import { useForm, Controller } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
@@ -54,6 +55,7 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
     control,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -64,7 +66,7 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
           // Convert UTC to event's original timezone for display
           startDate: format(toZonedTime(event.startDate, event.timezone), 'yyyy-MM-dd'),
           startTime: format(toZonedTime(event.startDate, event.timezone), 'HH:mm'),
-          endDate: format(toZonedTime(event.endDate, event.timezone), 'yyyy-MM-dd'),
+          endDate: format(toZonedTime(event.startDate, event.timezone), 'yyyy-MM-dd'),
           endTime: format(toZonedTime(event.endDate, event.timezone), 'HH:mm'),
           color: event.color,
           description: event.description || '',
@@ -80,6 +82,12 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
           description: '',
         },
   });
+
+  const startDate = useWatch({ control, name: 'startDate' });
+
+  useEffect(() => {
+    setValue('endDate', startDate, { shouldValidate: true });
+  }, [setValue, startDate]);
 
   // Convert local time in timezone to UTC
   const toUTC = (date: string, time: string, tz: string): Date => {
@@ -199,11 +207,17 @@ export function EventForm({ event, defaultDate, onSuccess, onCancel }: EventForm
         <div className="grid grid-cols-2 items-start gap-2">
           <div className="grid gap-2">
             <Label htmlFor="end-date">End Date</Label>
+            <span id="end-date-help" className="text-xs text-muted-foreground">
+              Currently read-only
+            </span>
             <InputGroup>
               <InputGroupInput
                 id="end-date"
                 type="date"
                 {...register('endDate')}
+                readOnly
+                aria-readonly="true"
+                aria-describedby="end-date-help"
                 className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                 aria-invalid={!!errors.endDate}
               />

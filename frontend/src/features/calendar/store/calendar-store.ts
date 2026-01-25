@@ -3,22 +3,25 @@ import { persist } from 'zustand/middleware';
 
 import type { CalendarEvent, CalendarView } from '../types';
 
-interface CalendarState {
-  // View state
+type CalendarDomainState = {
   selectedView: CalendarView;
   selectedDate: Date;
+};
 
-  // Dialog state
+type CalendarUiState = {
   isEventDialogOpen: boolean;
   selectedEvent: CalendarEvent | null;
   defaultDate: Date | null;
+};
 
-  // Actions
+type CalendarActions = {
   setSelectedView: (view: CalendarView) => void;
   setSelectedDate: (date: Date) => void;
   openEventDialog: (event?: CalendarEvent, defaultDate?: Date) => void;
   closeEventDialog: () => void;
-}
+};
+
+type CalendarState = CalendarDomainState & CalendarUiState & CalendarActions;
 
 export const useCalendarStore = create<CalendarState>()(
   persist(
