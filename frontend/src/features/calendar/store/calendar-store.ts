@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 import type { CalendarEvent, CalendarView } from '../types';
 
@@ -19,29 +20,37 @@ interface CalendarState {
   closeEventDialog: () => void;
 }
 
-export const useCalendarStore = create<CalendarState>((set) => ({
-  // Initial state
-  selectedView: 'week',
-  selectedDate: new Date(),
-  isEventDialogOpen: false,
-  selectedEvent: null,
-  defaultDate: null,
-
-  // Actions
-  setSelectedView: (view) => set({ selectedView: view }),
-  setSelectedDate: (date) => set({ selectedDate: date }),
-
-  openEventDialog: (event, defaultDate) =>
-    set({
-      isEventDialogOpen: true,
-      selectedEvent: event || null,
-      defaultDate: defaultDate || null,
-    }),
-
-  closeEventDialog: () =>
-    set({
+export const useCalendarStore = create<CalendarState>()(
+  persist(
+    (set) => ({
+      // Initial state
+      selectedView: 'week',
+      selectedDate: new Date(),
       isEventDialogOpen: false,
       selectedEvent: null,
       defaultDate: null,
+
+      // Actions
+      setSelectedView: (view) => set({ selectedView: view }),
+      setSelectedDate: (date) => set({ selectedDate: date }),
+
+      openEventDialog: (event, defaultDate) =>
+        set({
+          isEventDialogOpen: true,
+          selectedEvent: event || null,
+          defaultDate: defaultDate || null,
+        }),
+
+      closeEventDialog: () =>
+        set({
+          isEventDialogOpen: false,
+          selectedEvent: null,
+          defaultDate: null,
+        }),
     }),
-}));
+    {
+      name: 'calendar-store',
+      partialize: (state) => ({ selectedView: state.selectedView }),
+    }
+  )
+);

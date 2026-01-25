@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { format, startOfWeek, endOfWeek, addDays, isToday } from 'date-fns';
+import { motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 import { useCalendarStore } from '../../../store/calendar-store';
@@ -67,34 +68,47 @@ export function WeekView() {
 
           {/* Week grid */}
           <div className="relative grid flex-1 grid-cols-[repeat(7,minmax(100px,1fr))]">
-            {weekDays.map((day) => {
-              const dayEvents = getEventsForDay(events, day);
+            {(() => {
+              let globalIndex = 0;
+              return weekDays.map((day) => {
+                const dayEvents = getEventsForDay(events, day);
 
-              return (
-                <div key={day.toISOString()} className="relative border-l first:border-l-0">
-                  {/* Hour slots */}
-                  {hours.map((hour, index) => (
-                    <TimeSlot
-                      key={hour}
-                      date={day}
-                      hour={hour}
-                      isLast={index === hours.length - 1}
-                    />
-                  ))}
+                return (
+                  <div key={day.toISOString()} className="relative border-l first:border-l-0">
+                    {/* Hour slots */}
+                    {hours.map((hour, index) => (
+                      <TimeSlot
+                        key={hour}
+                        date={day}
+                        hour={hour}
+                        isLast={index === hours.length - 1}
+                      />
+                    ))}
 
-                  {/* Events */}
-                  {dayEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="absolute inset-x-0"
-                      style={{ top: `${getEventTopPixels(event)}px` }}
-                    >
-                      <EventBlock event={event} />
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+                    {/* Events with staggered entrance animation */}
+                    {dayEvents.map((event) => {
+                      const currentIndex = globalIndex++;
+                      return (
+                        <motion.div
+                          key={event.id}
+                          className="absolute inset-x-0"
+                          style={{ top: `${getEventTopPixels(event)}px` }}
+                          initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          transition={{
+                            duration: 0.2,
+                            delay: currentIndex * 0.08,
+                            ease: 'easeOut',
+                          }}
+                        >
+                          <EventBlock event={event} />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                );
+              });
+            })()}
 
             {/* Current time line */}
             {hasToday && <CurrentTimeLine />}

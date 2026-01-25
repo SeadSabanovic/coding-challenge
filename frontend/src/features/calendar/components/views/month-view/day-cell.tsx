@@ -1,4 +1,5 @@
 import { isToday, format, parseISO } from 'date-fns';
+import { motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 import { EVENT_BADGE_COLORS } from '../../../constants';
@@ -48,8 +49,8 @@ export function DayCell({ cell, events, isLastRow = false }: DayCellProps) {
       </button>
 
       <div className="mt-1 flex flex-col gap-1">
-        {dayEvents.map((event) => (
-          <button
+        {dayEvents.map((event, index) => (
+          <motion.button
             key={event.id}
             type="button"
             onClick={() => openEventDialog(event)}
@@ -57,13 +58,20 @@ export function DayCell({ cell, events, isLastRow = false }: DayCellProps) {
               'flex cursor-pointer items-center gap-1.5 truncate rounded-md border px-1.5 py-0.5 text-left text-xs transition-opacity hover:opacity-80',
               EVENT_BADGE_COLORS[event.color]
             )}
+            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{
+              duration: 0.2,
+              delay: index * 0.08,
+              ease: 'easeOut',
+            }}
           >
             <span className="dot size-1.5 shrink-0 rounded-full" />
             <span className="flex-1 truncate font-medium">{event.title}</span>
             <span className="shrink-0 text-[10px] opacity-75">
               {format(parseISO(event.startDate), 'HH:mm')}
             </span>
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>

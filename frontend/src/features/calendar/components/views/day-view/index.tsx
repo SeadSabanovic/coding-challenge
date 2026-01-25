@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { startOfDay, endOfDay } from 'date-fns';
+import { motion } from 'motion/react';
 
 import { useCalendarStore } from '../../../store/calendar-store';
 import { useEvents } from '../../../hooks/use-events';
@@ -44,15 +45,22 @@ export function DayView() {
               />
             ))}
 
-            {/* Events */}
-            {dayEvents.map((event) => (
-              <div
+            {/* Events with staggered entrance animation */}
+            {dayEvents.map((event, index) => (
+              <motion.div
                 key={event.id}
                 className="absolute inset-x-0"
                 style={{ top: `${getEventTopPixels(event)}px` }}
+                initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{
+                  duration: 0.2,
+                  delay: index * 0.08,
+                  ease: 'easeOut',
+                }}
               >
                 <EventBlock event={event} />
-              </div>
+              </motion.div>
             ))}
 
             {/* Current time line */}
